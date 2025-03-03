@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Screen Emotion Detector</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 400px;
+      height: 300px;
+      background-color: #1a1a1a;
+      color: white;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      display: flex;
+      flex-direction: column;
+      border-radius: 12px;
+      overflow: hidden;
+      padding: 12px;
+    }
+
+    .button-container {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      justify-content: center;
+      padding: 0 4px;
+    }
+
+    button {
+      padding: 8px 20px;
+      border-radius: 8px;
+      border: none;
+      color: white;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    button:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .start-button {
+      background: linear-gradient(135deg, #4f46e5, #3b82f6);
+    }
+
+    .stop-button {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+    }
+
+    .video-container {
+      position: relative;
+      flex-grow: 1;
+      background: #000;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    #videoElement {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    #canvasElement {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 2;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    #emotionsContainer {
+      min-height: 44px;
+    }
+
+    .emotion-card {
+      padding: 12px;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: white;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      letter-spacing: 0.5px;
+      background-image: linear-gradient(to right, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2),
+                  inset 0 1px 1px rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(4px);
+      transition: background-color 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .emotion-emoji {
+      font-size: 1.3rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="button-container">
+    <button id="startButton" class="start-button">Start</button>
+    <button id="stopButton" class="stop-button" disabled>Stop</button>
+  </div>
+
+  <div class="video-container">
+    <video id="videoElement" autoplay playsinline muted></video>
+    <canvas id="canvasElement"></canvas>
+  </div>
+
+  <div id="emotionsContainer"></div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
