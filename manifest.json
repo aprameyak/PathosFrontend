@@ -9,12 +9,13 @@
     "storage"
   ],
   "host_permissions": [
-    "http://localhost:5001/*"
+    "https://pathosbackend.onrender.com/*"
   ],
   "action": {
     "default_popup": "popup.html"
   },
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background.js",
+    "type": "module"
   }
 }
