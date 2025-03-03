@@ -65,7 +65,6 @@ async function startCapture() {
     document.getElementById('startButton').disabled = true;
     document.getElementById('stopButton').disabled = false;
 
-    
     startVideoProcessing();
     startEmotionProcessing();
 
@@ -133,7 +132,7 @@ function startEmotionProcessing() {
     const base64Frame = tempCanvas.toDataURL('image/jpeg');
 
     try {
-      const response = await fetch('http://localhost:5001/analyze_screen', {
+      const response = await fetch('https://pathosbackend.onrender.com/analyze_screen', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ frame: base64Frame })
@@ -165,96 +164,38 @@ function startEmotionProcessing() {
   processEmotions();
 }
 
-function calculateAverageEmotions(detections) {
-  if (!detections.length) return null;
+function calculateAverageEmotions(emotionBuffer) {
+  if (emotionBuffer.length === 0) return null;
 
-  const totalScores = {};
-  
-  detections.forEach(detection => {
-    Object.entries(detection.emotion_scores).forEach(([emotion, score]) => {
-      totalScores[emotion] = (totalScores[emotion] || 0) + score;
-    });
+  const emotionSums = {};
+  const emotionCounts = {};
+
+  emotionBuffer.forEach(emotionData => {
+    for (const [emotion, value] of Object.entries(emotionData.emotions)) {
+      if (!emotionSums[emotion]) {
+        emotionSums[emotion] = 0;
+        emotionCounts[emotion] = 0;
+      }
+      emotionSums[emotion] += value;
+      emotionCounts[emotion] += 1;
+    }
   });
 
-  const averageScores = {};
-  Object.entries(totalScores).forEach(([emotion, total]) => {
-    averageScores[emotion] = total / detections.length;
-  });
+  const averagedEmotions = {};
+  for (const emotion in emotionSums) {
+    averagedEmotions[emotion] = emotionSums[emotion] / emotionCounts[emotion];
+  }
 
-  const dominantEmotion = Object.entries(averageScores).reduce(
-    (max, [emotion, score]) => score > max.score ? {emotion, score} : max,
-    {emotion: '', score: -1}
-  ).emotion;
-
-  return {
-    dominant_emotion: dominantEmotion,
-    emotion_scores: averageScores
-  };
+  return averagedEmotions;
 }
 
 function displayFaceRegion(region) {
-  const { x, y, w, h } = region;
-  
-  const padding = 0.2;
-  const paddedWidth = w * (1 + 2 * padding);
-  const paddedHeight = h * (1 + 2 * padding);
-  const paddedX = Math.max(0, x - (w * padding));
-  const paddedY = Math.max(0, y - (h * padding));
-
-  const sourceWidth = Math.min(paddedWidth, videoElement.videoWidth - paddedX);
-  const sourceHeight = Math.min(paddedHeight, videoElement.videoHeight - paddedY);
+  if (!region) return;
 
   canvasContext.clearRect(0, 0, canvasElement.width, canvasElement.height);
+  canvasContext.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
 
-  const sourceAspect = sourceWidth / sourceHeight;
-  const canvasAspect = canvasElement.width / canvasElement.height;
-
-  let drawWidth = canvasElement.width;
-  let drawHeight = canvasElement.height;
-  let offsetX = 0;
-  let offsetY = 0;
-
-  if (sourceAspect > canvasAspect) {
-    drawHeight = drawWidth / sourceAspect;
-    offsetY = (canvasElement.height - drawHeight) / 2;
-  } else {
-    drawWidth = drawHeight * sourceAspect;
-    offsetX = (canvasElement.width - drawWidth) / 2;
-  }
-
-  canvasContext.drawImage(
-    videoElement,
-    paddedX,
-    paddedY,
-    sourceWidth,
-    sourceHeight,
-    offsetX,
-    offsetY,
-    drawWidth,
-    drawHeight
-  );
-}
-
-function updateEmotionsDisplay(emotions) {
-  if (!emotions) {
-    emotionsContainer.innerHTML = '';
-    return;
-  }
-
-  const bgColor = emotionColors[emotions.dominant_emotion.toLowerCase()] || '#666';
-  
-  emotionsContainer.innerHTML = `
-    <div class="emotion-card" style="
-      background-color: ${bgColor};
-      padding: 12px;
-      border-radius: 4px;
-      text-align: center;
-      font-size: 1.2rem;
-      font-weight: bold;
-      color: white;
-      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-    ">
-      ${emotions.dominant_emotion.toUpperCase()}
-    </div>
-  `;
+  canvasContext.strokeStyle = 'red';
+  canvasContext.lineWidth = 2;
+  canvasContext.strokeRect(region.x, region.y, region.width, region.height);
 }
