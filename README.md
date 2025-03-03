@@ -1,4 +1,4 @@
-**Frontend Technologies:**
+**Frontend:**
 - ReactJS
 - JavaScript (Vanilla/Native)
 - HTML5
