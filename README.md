@@ -1,1 +1,11 @@
-readme
+**Frontend Technologies:**
+- ReactJS
+- JavaScript (Vanilla/Native)
+- HTML5
+- CSS3
+- Chrome Extension APIs
+- chrome.runtime for message passing
+- chrome.tabs for tab management
+- chrome.desktopCapture for screen capture
+- MediaDevices API for stream handling
+- Requests to Render backend
