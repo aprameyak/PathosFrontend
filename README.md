@@ -1,4 +1,4 @@
-**Frontend:**
+**This is the production Frontend for Pathos deployed on the Chrome Web Store:**
 - ReactJS
 - JavaScript (Vanilla/Native)
 - HTML5
